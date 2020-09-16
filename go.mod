@@ -18,7 +18,7 @@ require (
 	github.com/mattn/go-shellwords v1.0.10 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/spf13/viper v1.7.1 // indirect
+	github.com/spf13/viper v1.7.1
 	github.com/twinj/uuid v1.0.0
 	go.mongodb.org/mongo-driver v1.4.0
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a // indirect

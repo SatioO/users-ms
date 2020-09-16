@@ -1,9 +1,9 @@
 package usecase
 
 import (
-	"os"
 	"time"
 
+	"github.com/spf13/viper"
 	"github.com/twinj/uuid"
 
 	"github.com/dgrijalva/jwt-go"
@@ -44,7 +44,6 @@ func (a *authUsecase) CreateToken(user domain.User) (*domain.TokenDetails, error
 	var err error
 
 	//Creating Access Token
-	os.Setenv("ACCESS_SECRET", "brain_machine")
 	atClaims := jwt.MapClaims{
 		"user_id":     user.ID,
 		"username":    user.Name,
@@ -53,14 +52,13 @@ func (a *authUsecase) CreateToken(user domain.User) (*domain.TokenDetails, error
 	}
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	td.AccessToken, err = at.SignedString([]byte(os.Getenv("ACCESS_SECRET")))
+	td.AccessToken, err = at.SignedString([]byte(viper.GetString("security.accesssecret")))
 
 	if err != nil {
 		return nil, err
 	}
 
 	// Creating Refresh Token
-	os.Setenv("REFRESH_SECRET", "machine")
 	rtClaims := jwt.MapClaims{
 		"user_id":      user.ID,
 		"username":     user.Name,
@@ -69,7 +67,7 @@ func (a *authUsecase) CreateToken(user domain.User) (*domain.TokenDetails, error
 	}
 
 	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
-	td.RefreshToken, err = rt.SignedString([]byte(os.Getenv("REFRESH_SECRET")))
+	td.RefreshToken, err = rt.SignedString([]byte(viper.GetString("security.refreshsecret")))
 
 	if err != nil {
 		return nil, err

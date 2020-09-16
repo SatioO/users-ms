@@ -7,9 +7,13 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 
+	"github.com/satioO/users/config"
+
 	"github.com/gorilla/mux"
+	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -58,11 +62,12 @@ func (a *Server) Initialize() {
 
 // Run the application
 func (a *Server) Run(port string) error {
-	fmt.Println("User Management Service is Up Now")
+	// Setup configuration
+	configuration := SetupConfig()
 
 	// HTTP Server
 	a.HTTPServer = &http.Server{
-		Addr:           port,
+		Addr:           ":" + configuration.Server.Port,
 		Handler:        a.Router,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
@@ -70,6 +75,7 @@ func (a *Server) Run(port string) error {
 	}
 
 	go func() {
+		fmt.Println("User Management Service started listening on port", configuration.Server.Port)
 		if err := a.HTTPServer.ListenAndServe(); err != nil {
 			log.Fatalf("Failed to listen and serve: %+v", err)
 		}
@@ -106,4 +112,31 @@ func ConnectDB(dbName string) *mongo.Database {
 	}
 
 	return client.Database(dbName)
+}
+
+// SetupConfig manages configuration across application
+func SetupConfig() *config.Configurations {
+	// Set the file name of the configurations file
+	viper.SetConfigName("config")
+
+	// Set the path to look for the configurations file
+	viper.AddConfigPath(".")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	// Enable VIPER to read Environment Variables
+	viper.AutomaticEnv()
+	viper.SetConfigType("yml")
+
+	var configuration config.Configurations
+
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Printf("Error reading config file, %s", err)
+	}
+
+	err := viper.Unmarshal(&configuration)
+	if err != nil {
+		fmt.Printf("Unable to decode into struct, %v", err)
+	}
+
+	return &configuration
 }
