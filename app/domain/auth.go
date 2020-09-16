@@ -18,8 +18,8 @@ type TokenDetails struct {
 
 // AuthUsecase ...
 type AuthUsecase interface {
-	LoginUser(auth Auth) (string, error)
-	CreateToken(user User) (string, error)
+	LoginUser(auth Auth) (*TokenDetails, error)
+	CreateToken(user User) (*TokenDetails, error)
 }
 
 // AuthRepository ...

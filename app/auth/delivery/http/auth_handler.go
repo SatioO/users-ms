@@ -30,7 +30,7 @@ func (a *authHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := a.usecase.LoginUser(auth)
+	tokenDetails, err := a.usecase.LoginUser(auth)
 
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -38,7 +38,7 @@ func (a *authHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, _ := json.Marshal(map[string]string{"data": token})
+	response, _ := json.Marshal(map[string]domain.TokenDetails{"data": *tokenDetails})
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

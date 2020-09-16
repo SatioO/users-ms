@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/satioO/users/app/middlewares"
+
 	"github.com/gorilla/mux"
 	"github.com/satioO/users/app/domain"
 )
@@ -18,8 +20,8 @@ func MakeBookHandlers(r *mux.Router, usecase domain.BookUsecase) {
 		usecase,
 	}
 
-	r.HandleFunc("/books", handler.FindBooks).Methods("GET")
-	r.HandleFunc("/book/{bookID}", handler.FindBook).Methods("GET")
+	r.HandleFunc("/books", middlewares.AuthMiddleware(handler.FindBooks)).Methods("GET")
+	r.HandleFunc("/book/{bookID}", middlewares.AuthMiddleware(handler.FindBook)).Methods("GET")
 }
 
 func (b *bookHandler) FindBooks(w http.ResponseWriter, r *http.Request) {
@@ -41,5 +43,3 @@ func (b *bookHandler) FindBook(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Write(response)
 }
-
-
