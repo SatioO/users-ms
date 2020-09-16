@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/satioO/users/app/middlewares"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/gorilla/mux"
@@ -23,10 +25,10 @@ func MakeUserHandlers(r *mux.Router, usecase domain.UsersUsecase) {
 		usecase,
 	}
 
-	r.HandleFunc("/users", handler.FindUsers).Methods("GET")
-	r.HandleFunc("/users", handler.CreateUser).Methods("POST")
-	r.HandleFunc("/users/{userID}", handler.FindUser).Methods("GET")
-	r.HandleFunc("/users/{userID}", handler.UpdateUser).Methods("PUT")
+	r.HandleFunc("/users", middlewares.AuthMiddleware(handler.FindUsers)).Methods("GET")
+	r.HandleFunc("/users", middlewares.AuthMiddleware(handler.CreateUser)).Methods("POST")
+	r.HandleFunc("/users/{userID}", middlewares.AuthMiddleware(handler.FindUser)).Methods("GET")
+	r.HandleFunc("/users/{userID}", middlewares.AuthMiddleware(handler.UpdateUser)).Methods("PUT")
 }
 
 // FindUsers will fetch the article based on given params
