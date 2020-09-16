@@ -16,6 +16,13 @@ type TokenDetails struct {
 	RtExpires    int64
 }
 
+// AccessDetails ...
+type AccessDetails struct {
+	AccessUUID string
+	UserID     string
+	Username   string
+}
+
 // AuthUsecase ...
 type AuthUsecase interface {
 	LoginUser(auth Auth) (*TokenDetails, error)

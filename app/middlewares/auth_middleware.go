@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/satioO/users/app/domain"
+
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -62,4 +64,32 @@ func TokenValid(r *http.Request) error {
 	}
 
 	return nil
+}
+
+// ExtractMetadata ...
+func ExtractMetadata(r *http.Request) (*domain.AccessDetails, error) {
+	token, err := VerifyToken(r)
+
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if ok && token.Valid {
+		accessUUID, ok := claims["access_uuid"].(string)
+
+		if !ok {
+			return nil, err
+		}
+
+		userID := claims["user_id"].(string)
+
+		return &domain.AccessDetails{
+			AccessUUID: accessUUID,
+			UserID:     userID,
+		}, nil
+	}
+
+	return nil, err
 }
