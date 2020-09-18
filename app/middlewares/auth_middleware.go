@@ -3,8 +3,9 @@ package middlewares
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
+
+	"github.com/spf13/viper"
 
 	"github.com/satioO/users/app/domain"
 
@@ -43,7 +44,7 @@ func VerifyToken(r *http.Request) (*jwt.Token, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected string method %v", token.Header["Alg"])
 		}
-		return []byte(os.Getenv("ACCESS_SECRET")), nil
+		return []byte(viper.GetString("security.accesssecret")), nil
 	})
 
 	if err != nil {
