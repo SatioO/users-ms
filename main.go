@@ -1,9 +1,45 @@
 package main
 
 import (
-	"runtime"
+	"fmt"
+	"math/rand"
+	"time"
 )
 
 func main() {
-	addConcurrent(runtime.NumCPU(), []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21})
+	c := fanIn(boring("John"), boring("Joe"))
+
+	for i := 0; i < 10; i++ {
+		fmt.Printf("You say: %q\n", <-c)
+	}
+
+	fmt.Println("Quit")
+}
+
+func fanIn(input1, input2 <-chan string) <-chan string {
+	c := make(chan string)
+	go func() {
+		for {
+			select {
+			case s := <-input1:
+				c <- s
+			case s := <-input2:
+				c <- s
+			}
+		}
+	}()
+	return c
+}
+
+func boring(name string) <-chan string {
+	c := make(chan string)
+
+	go func() {
+		for i := 0; i < 5; i++ {
+			c <- fmt.Sprintf("%s: %d", name, i)
+			time.Sleep(time.Duration(rand.Intn(1e4)) * time.Millisecond)
+		}
+	}()
+
+	return c
 }
